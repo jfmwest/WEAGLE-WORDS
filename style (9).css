@@ -1,0 +1,47 @@
+/* The grid-container is now using Flexbox */
+.grid-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+/* The grid-row uses flex to allow items to shrink to fit */
+.grid-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 10px;
+}
+
+/* The grid-cell now has a flexible width and height */
+.grid-cell {
+    width: 15vw; /* Makes the cell width responsive */
+    height: 15vw; /* Corresponding height */
+    min-width: 50px; /* Ensures the cell doesn’t get too small */
+    min-height: 50px; /* Ensures the cell doesn’t get too small */
+    max-width: 60px; /* Ensures the cell doesn't grow too large */
+    max-height: 60px; /* Ensures the cell doesn't grow too large */
+    border: 2px solid #FFFFFF;
+    text-align: center;
+    font-size: 2.5vw; /* Size scales with the viewport */
+    text-transform: uppercase;
+    background-color: #002B5C;
+    color: #FFFFFF;
+}
+
+/* Make the cells smaller on smaller screens */
+@media (max-width: 600px) {
+    .grid-cell {
+        width: 20vw;
+        height: 20vw;
+        font-size: 5vw; /* Bigger text for smaller screens */
+    }
+}
+
+
+
+

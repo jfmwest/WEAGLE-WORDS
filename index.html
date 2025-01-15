@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle Game - Eagles Edition</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #002B5C;
+            color: #FFFFFF;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #FFD700;
+        }
+
+        .grid-container {
+            display: grid;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .grid-row {
+            display: flex;
+            justify-content: center;
+        }
+
+        .grid-cell {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #FFFFFF;
+            text-align: center;
+            font-size: 24px;
+            text-transform: uppercase;
+            background-color: #002B5C;
+            color: #FFFFFF;
+        }
+
+        .grid-cell.correct {
+            background-color: #FFD700; /* Gold */
+        }
+
+        .grid-cell.partial {
+            background-color: #005BAC; /* Blue */
+        }
+
+        .grid-cell.incorrect {
+            background-color: #808080; /* Grey for incorrect guesses */
+        }
+
+        button {
+            background-color: #FFD700;
+            border: none;
+            color: #002B5C;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #FFC107;
+        }
+
+        #message {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Guess Today's Word!</h1>
+    <p>The word is related to the West Coast Eagles Football Club, past and present.</p>
+    <div id="grid" class="grid-container"></div>
+    <p>Attempts Remaining: <span id="attempts">6</span></p>
+    <button onclick="submitGuess()">Submit Guess</button>
+    <div id="message"></div>
+
+    <script>
+        const words = [
+            "woosha", "kemp", "mainy", "juddy", "cuzzy", "lewis", "pykie", "kelly", "hough", "harley",
+            "drive", "power", "chase", "skill", "glory", "train", "focus", "speed", "match", "strive", "fight", "tough"
+        ];
+
+        // Randomly pick a word from the list
+        const word = words[Math.floor(Math.random() * words.length)];
+        const maxAttempts = 6;
+        let attempts = maxAttempts;
+        let currentGuess = "";
+        let currentRow = 0;
+
+        // Dynamically create the grid based on the word length
+        const grid = document.getElementById("grid");
+        for (let i = 0; i < maxAttempts; i++) {
+            const row = document.createElement("div");
+            row.classList.add("grid-row");
+            row.id = `row-${i}`;
+            for (let j = 0; j < word.length; j++) {
+                const cell = document.createElement("input");
+                cell.classList.add("grid-cell");
+                cell.setAttribute("maxlength", "1");
+                cell.id = `cell-${i}-${j}`;
+                cell.addEventListener("input", (e) => handleInput(e, j));
+                row.appendChild(cell);
+            }
+            grid.appendChild(row);
+        }
+
+        function handleInput(e, position) {
+            const input = e.target;
+            const value = input.value.toUpperCase();
+            if (!/^[A-Za-z]$/.test(value)) {
+                input.value = ""; // Clear non-letter input
+                return;
+            }
+            // Automatically move to the next cell
+            if (position < word.length - 1) {
+                document.getElementById(`cell-${currentRow}-${position + 1}`).focus();
+            }
+            updateCurrentGuess();
+        }
+
+        function updateCurrentGuess() {
+            currentGuess = "";
+            for (let i = 0; i < word.length; i++) {
+                const cell = document.getElementById(`cell-${currentRow}-${i}`);
+                currentGuess += cell.value.toLowerCase();
+            }
+        }
+
+        function submitGuess() {
+            if (currentGuess.length !== word.length) {
+                document.getElementById("message").innerText = "Please complete the word!";
+                return;
+            }
+
+            const correctWordArray = word.split("");
+            const guessArray = currentGuess.split("");
+            const row = document.getElementById(`row-${currentRow}`);
+
+            // Check the guess and apply colors
+            for (let i = 0; i < word.length; i++) {
+                const cell = document.getElementById(`cell-${currentRow}-${i}`);
+                if (guessArray[i] === correctWordArray[i]) {
+                    cell.classList.add("correct");
+                } else if (correctWordArray.includes(guessArray[i])) {
+                    cell.classList.add("partial");
+                } else {
+                    cell.classList.add("incorrect");
+                }
+            }
+
+            // Check for win or lose
+            if (currentGuess === word) {
+                document.getElementById("message").innerText = "You guessed it! Well done!";
+                disableInput();
+                return;
+            }
+
+            attempts--;
+            document.getElementById("attempts").innerText = attempts;
+
+            if (attempts === 0) {
+                document.getElementById("message").innerText = `Game over! The word was "${word.toUpperCase()}".`;
+                disableInput();
+                return;
+            }
+
+            currentRow++;
+            currentGuess = "";
+        }
+
+        function disableInput() {
+            for (let i = 0; i < maxAttempts; i++) {
+                for (let j = 0; j < word.length; j++) {
+                    const cell = document.getElementById(`cell-${i}-${j}`);
+                    cell.disabled = true;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
